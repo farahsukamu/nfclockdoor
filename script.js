@@ -1,21 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RFID UID Manager</title>
-</head>
-<body>
-  <!-- Bagian HTML Anda -->
-  <input type="text" id="new-uid" placeholder="Masukkan UID baru">
-  <button onclick="addUID()">Tambah UID</button>
-  <ul id="uid-list"></ul>
+// Konfigurasi Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBU6FpDXlpesoWvfRc4ZtuM30tmW-yfiMQ",
+    authDomain: "rfid-lockdoor.firebaseapp.com",
+    databaseURL: "https://rfid-lockdoor-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "rfid-lockdoor",
+    storageBucket: "rfid-lockdoor.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",  // Dapatkan dari Firebase Console
+    appId: "YOUR_APP_ID"  // Dapatkan dari Firebase Console
+};
 
-  <!-- Menambahkan Firebase Script di index.html -->
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+// Inisialisasi Firebase
+firebase.initializeApp(firebaseConfig);
 
-  <!-- Tambahkan file eksternal script.js -->
-  <script src="script.js"></script>
-</body>
-</html>
+// Mendapatkan referensi ke database
+const database = firebase.database();
+
+// Fungsi untuk menambahkan UID baru
+function addUID() {
+    const newUID = document.getElementById('new-uid').value;
+    if (newUID) {
+        database.ref('UIDs/' + newUID).set({
+            uid: newUID
+        });
+        alert('UID berhasil ditambahkan!');
+    } else {
+        alert('Mohon masukkan UID.');
+    }
+}
+
+// Menampilkan UID yang terdaftar di list
+database.ref('UIDs').on('value', (snapshot) => {
+    const uidList = document.getElementById('uid-list');
+    uidList.innerHTML = '';
+    snapshot.forEach((childSnapshot) => {
+        const childData = childSnapshot.val();
+        const li = document.createElement('li');
+        li.textContent = childData.uid;
+        uidList.appendChild(li);
+    });
+});
+
+// Fungsi untuk mengontrol servo
+function controlServo(action) {
+    database.ref('control/servo').set(action)
+        .then(() => {
+            alert('Perintah berhasil dikirim: ' + action);
+        })
+        .catch((error) => {
+            alert('Gagal mengirim perintah: ' + error);
+        });
+}
