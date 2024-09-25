@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RFID Lock Door</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RFID Lock Door</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 </head>
 <body>
-    <h1>RFID Lock Door Control</h1>
-    
-    <h2>Tambah UID Baru</h2>
-    <input type="text" id="new-uid" placeholder="Masukkan UID">
-    <button onclick="addUID()">Tambah UID</button>
-    
-    <h2>Daftar UID yang Terdaftar</h2>
-    <ul id="uid-list"></ul>
-    
-    <h2>Kontrol Servo</h2>
-    <button onclick="controlServo('open')">Buka Kunci</button>
-    <button onclick="controlServo('close')">Tutup Kunci</button>
+  <h1>RFID Lock Door Control</h1>
 
-    <script src="script.js"></script>
+  <h2>Tambah UID Baru</h2>
+  <input type="text" id="new-uid" placeholder="Masukkan UID">
+  <button onclick="addUID()">Tambahkan UID</button>
+
+  <h2>UID Terdaftar</h2>
+  <ul id="uid-list"></ul>
+
+  <h2>Kendalikan Servo</h2>
+  <button onclick="moveServo(0)">Kunci</button>
+  <button onclick="moveServo(180)">Buka Kunci</button>
+
+  <script src="script.js"></script>
 </body>
 </html>
