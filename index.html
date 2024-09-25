@@ -10,80 +10,81 @@
 <body>
     <h1>RFID Lock Door System</h1>
 
-    <!-- Form untuk menambahkan UID baru -->
-    <h3>Tambahkan Kartu Baru</h3>
-    <input type="text" id="uidInput" placeholder="Masukkan UID Kartu Baru">
-    <button onclick="addUID()">Tambahkan Kartu</button>
+    <!-- Menambahkan akses baru -->
+    <h3>Add Access</h3>
+    <button onclick="addAccess()">Add Access</button>
 
-    <!-- Daftar UID yang terdaftar -->
-    <h3>UID yang Terdaftar</h3>
-    <ul id="uidList"></ul>
+    <!-- Menghapus akses yang ada -->
+    <h3>Remove Access</h3>
+    <input type="text" id="removeUidInput" placeholder="Enter UID to remove">
+    <button onclick="removeAccess()">Remove Access</button>
 
     <!-- Kontrol Servo -->
-    <h3>Kontrol Servo</h3>
-    <label for="servoPos">Posisi Servo (0-180): </label>
-    <input type="number" id="servoPos" min="0" max="180" value="0">
-    <button onclick="moveServo()">Gerakkan Servo</button>
+    <h3>Control Servo</h3>
+    <button onclick="moveServo()">Move Servo</button>
 
     <script>
         // Konfigurasi Firebase
         var firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyBU6FpDXlpesoWvfRc4ZtuM30tmW-yfiMQ",
+            authDomain: "rfid-lockdoor.firebaseapp.com",
+            databaseURL: "https://rfid-lockdoor-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "rfid-lockdoor",
+            storageBucket: "rfid-lockdoor.appspot.com",
+            messagingSenderId: "877353383754",
+            appId: "1:877353383754:web:d47a2692b015dd196473b3",
+            measurementId: "G-8VQWLYGYZ0"
         };
         firebase.initializeApp(firebaseConfig);
         var database = firebase.database();
 
-        // Fungsi menambahkan UID baru
-        function addUID() {
-            var uid = document.getElementById("uidInput").value;
+        // Fungsi untuk menambahkan akses baru
+        function addAccess() {
+            alert("Tap your RFID card...");
+            document.addEventListener('click', function() {
+                // Mengambil UID dari RFID
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    // Kode untuk membaca UID dari RFID bisa ditambahkan di sini
+                    // Untuk saat ini, misalkan UID yang didapat adalah "UID_SAMPLED"
+                    var uid = prompt("Enter UID from RFID card:"); // Anda bisa mengganti ini dengan pembacaan RFID yang sebenarnya
+                    if (uid) {
+                        database.ref('UIDs/' + uid).set("Valid").then(function() {
+                            alert("Access added: " + uid);
+                        }).catch(function(error) {
+                            console.error("Error: ", error);
+                        });
+                    }
+                });
+            }, { once: true });
+        }
+
+        // Fungsi untuk menghapus akses
+        function removeAccess() {
+            var uid = document.getElementById("removeUidInput").value;
             if (uid) {
-                database.ref('UIDs/' + uid).set("Valid").then(function() {
-                    alert("UID berhasil ditambahkan!");
-                    document.getElementById("uidInput").value = "";
-                    fetchUIDs();
+                database.ref('UIDs/' + uid).remove().then(function() {
+                    alert("Access removed: " + uid);
+                    document.getElementById("removeUidInput").value = "";
                 }).catch(function(error) {
                     console.error("Error: ", error);
                 });
             } else {
-                alert("Masukkan UID yang valid.");
+                alert("Please enter a valid UID.");
             }
-        }
-
-        // Mengambil daftar UID yang terdaftar
-        function fetchUIDs() {
-            var uidList = document.getElementById("uidList");
-            uidList.innerHTML = "";
-            database.ref('UIDs').once('value', function(snapshot) {
-                snapshot.forEach(function(childSnapshot) {
-                    var uid = childSnapshot.key;
-                    var li = document.createElement("li");
-                    li.textContent = uid;
-                    uidList.appendChild(li);
-                });
-            });
         }
 
         // Fungsi untuk menggerakkan servo
         function moveServo() {
-            var pos = document.getElementById("servoPos").value;
-            if (pos >= 0 && pos <= 180) {
-                database.ref('Servo/position').set(Number(pos)).then(function() {
-                    alert("Servo digerakkan ke posisi " + pos);
-                }).catch(function(error) {
-                    console.error("Error: ", error);
-                });
-            } else {
-                alert("Masukkan posisi yang valid (0-180).");
-            }
+            database.ref('Servo/position').set(180).then(function() {
+                setTimeout(function() {
+                    database.ref('Servo/position').set(0);
+                }, 5000); // Set servo kembali ke posisi 0 setelah 5 detik
+                alert("Servo moved to 180 degrees.");
+            }).catch(function(error) {
+                console.error("Error: ", error);
+            });
         }
-
-        window.onload = fetchUIDs;
     </script>
 </body>
 </html>
