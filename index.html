@@ -3,29 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RFID Access Control</title>
-    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-database.js"></script>
-</head>
-<body>
-    <h1>RFID Lock Door System</h1>
-
-    <!-- Menambahkan akses baru -->
-    <h3>Add Access</h3>
-    <button onclick="addAccess()">Add Access</button>
-
-    <!-- Menghapus akses yang ada -->
-    <h3>Remove Access</h3>
-    <input type="text" id="removeUidInput" placeholder="Enter UID to remove">
-    <button onclick="removeAccess()">Remove Access</button>
-
-    <!-- Kontrol Servo -->
-    <h3>Control Servo</h3>
-    <button onclick="moveServo()">Move Servo</button>
-
+    <title>RFID Lock Door</title>
+    <script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-auth.js"></script>
     <script>
         // Konfigurasi Firebase
-        var firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyBU6FpDXlpesoWvfRc4ZtuM30tmW-yfiMQ",
             authDomain: "rfid-lockdoor.firebaseapp.com",
             databaseURL: "https://rfid-lockdoor-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -35,56 +19,16 @@
             appId: "1:877353383754:web:d47a2692b015dd196473b3",
             measurementId: "G-8VQWLYGYZ0"
         };
+
+        // Inisialisasi Firebase
         firebase.initializeApp(firebaseConfig);
-        var database = firebase.database();
-
-        // Fungsi untuk menambahkan akses baru
-        function addAccess() {
-            alert("Tap your RFID card...");
-            document.addEventListener('click', function() {
-                // Mengambil UID dari RFID
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(function(stream) {
-                    // Kode untuk membaca UID dari RFID bisa ditambahkan di sini
-                    // Untuk saat ini, misalkan UID yang didapat adalah "UID_SAMPLED"
-                    var uid = prompt("Enter UID from RFID card:"); // Anda bisa mengganti ini dengan pembacaan RFID yang sebenarnya
-                    if (uid) {
-                        database.ref('UIDs/' + uid).set("Valid").then(function() {
-                            alert("Access added: " + uid);
-                        }).catch(function(error) {
-                            console.error("Error: ", error);
-                        });
-                    }
-                });
-            }, { once: true });
-        }
-
-        // Fungsi untuk menghapus akses
-        function removeAccess() {
-            var uid = document.getElementById("removeUidInput").value;
-            if (uid) {
-                database.ref('UIDs/' + uid).remove().then(function() {
-                    alert("Access removed: " + uid);
-                    document.getElementById("removeUidInput").value = "";
-                }).catch(function(error) {
-                    console.error("Error: ", error);
-                });
-            } else {
-                alert("Please enter a valid UID.");
-            }
-        }
-
-        // Fungsi untuk menggerakkan servo
-        function moveServo() {
-            database.ref('Servo/position').set(180).then(function() {
-                setTimeout(function() {
-                    database.ref('Servo/position').set(0);
-                }, 5000); // Set servo kembali ke posisi 0 setelah 5 detik
-                alert("Servo moved to 180 degrees.");
-            }).catch(function(error) {
-                console.error("Error: ", error);
-            });
-        }
     </script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <h1>RFID Lock Door Control</h1>
+    <button id="addAccessButton">Add Access</button>
+    <button id="removeAccessButton">Remove Access</button>
+    <button id="unlockButton">Unlock</button>
 </body>
 </html>
