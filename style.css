@@ -1,0 +1,18 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+input, button {
+    margin-top: 10px;
+}
+
+#uid-list {
+    list-style: none;
+    padding: 0;
+}
+
+#uid-list li {
+    margin: 5px 0;
+}
