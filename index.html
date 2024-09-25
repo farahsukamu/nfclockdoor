@@ -1,23 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RFID UID Manager</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RFID UID Manager</title>
 </head>
 <body>
-    <h1>RFID UID Manager</h1>
-    <div>
-        <h3>Daftar UID yang Terdaftar</h3>
-        <ul id="uid-list"></ul>
-    </div>
-    <div>
-        <input type="text" id="new-uid" placeholder="Masukkan UID baru">
-        <button onclick="addUID()">Tambah UID</button>
-    </div>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-    <script src="script.js"></script>
+  <!-- Bagian HTML Anda -->
+  <input type="text" id="new-uid" placeholder="Masukkan UID baru">
+  <button onclick="addUID()">Tambah UID</button>
+  <ul id="uid-list"></ul>
+
+  <!-- Menambahkan Firebase Script langsung di index.html -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+
+  <script>
+    // Kode Firebase dan fungsi JavaScript Anda disini
+    const firebaseConfig = {
+      apiKey: "AIzaSyBU6FpDXlpesoWvfRc4ZtuM30tmW-yfiMQ",
+      authDomain: "rfid-lockdoor.firebaseapp.com",
+      databaseURL: "https://rfid-lockdoor-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rfid-lockdoor",
+      storageBucket: "rfid-lockdoor.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    function addUID() {
+      const newUID = document.getElementById('new-uid').value;
+      if (newUID) {
+        database.ref('UIDs/' + newUID).set({ uid: newUID });
+        alert('UID berhasil ditambahkan!');
+      } else {
+        alert('Mohon masukkan UID.');
+      }
+    }
+
+    database.ref('UIDs').on('value', (snapshot) => {
+      const uidList = document.getElementById('uid-list');
+      uidList.innerHTML = '';
+      snapshot.forEach((childSnapshot) => {
+        const childData = childSnapshot.val();
+        const li = document.createElement('li');
+        li.textContent = childData.uid;
+        uidList.appendChild(li);
+      });
+    });
+  </script>
 </body>
 </html>
