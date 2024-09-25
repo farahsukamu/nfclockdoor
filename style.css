@@ -1,18 +1,17 @@
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
+    margin: 20px;
+}
+
+h1, h2 {
+    color: #333;
 }
 
 input, button {
+    padding: 10px;
     margin-top: 10px;
 }
 
-#uid-list {
-    list-style: none;
-    padding: 0;
-}
-
-#uid-list li {
-    margin: 5px 0;
+ul {
+    list-style-type: none;
 }
