@@ -1,27 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RFID Lock Door</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFID Access Control</title>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-database.js"></script>
 </head>
 <body>
-  <h1>RFID Lock Door Control</h1>
+    <h1>RFID Lock Door System</h1>
 
-  <h2>Tambah UID Baru</h2>
-  <input type="text" id="new-uid" placeholder="Masukkan UID">
-  <button onclick="addUID()">Tambahkan UID</button>
+    <!-- Form untuk menambahkan UID baru -->
+    <h3>Tambahkan Kartu Baru</h3>
+    <input type="text" id="uidInput" placeholder="Masukkan UID Kartu Baru">
+    <button onclick="addUID()">Tambahkan Kartu</button>
 
-  <h2>UID Terdaftar</h2>
-  <ul id="uid-list"></ul>
+    <!-- Daftar UID yang terdaftar -->
+    <h3>UID yang Terdaftar</h3>
+    <ul id="uidList"></ul>
 
-  <h2>Kendalikan Servo</h2>
-  <button onclick="moveServo(0)">Kunci</button>
-  <button onclick="moveServo(180)">Buka Kunci</button>
+    <!-- Kontrol Servo -->
+    <h3>Kontrol Servo</h3>
+    <label for="servoPos">Posisi Servo (0-180): </label>
+    <input type="number" id="servoPos" min="0" max="180" value="0">
+    <button onclick="moveServo()">Gerakkan Servo</button>
 
-  <script src="script.js"></script>
+    <script>
+        // Konfigurasi Firebase
+        var firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var database = firebase.database();
+
+        // Fungsi menambahkan UID baru
+        function addUID() {
+            var uid = document.getElementById("uidInput").value;
+            if (uid) {
+                database.ref('UIDs/' + uid).set("Valid").then(function() {
+                    alert("UID berhasil ditambahkan!");
+                    document.getElementById("uidInput").value = "";
+                    fetchUIDs();
+                }).catch(function(error) {
+                    console.error("Error: ", error);
+                });
+            } else {
+                alert("Masukkan UID yang valid.");
+            }
+        }
+
+        // Mengambil daftar UID yang terdaftar
+        function fetchUIDs() {
+            var uidList = document.getElementById("uidList");
+            uidList.innerHTML = "";
+            database.ref('UIDs').once('value', function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    var uid = childSnapshot.key;
+                    var li = document.createElement("li");
+                    li.textContent = uid;
+                    uidList.appendChild(li);
+                });
+            });
+        }
+
+        // Fungsi untuk menggerakkan servo
+        function moveServo() {
+            var pos = document.getElementById("servoPos").value;
+            if (pos >= 0 && pos <= 180) {
+                database.ref('Servo/position').set(Number(pos)).then(function() {
+                    alert("Servo digerakkan ke posisi " + pos);
+                }).catch(function(error) {
+                    console.error("Error: ", error);
+                });
+            } else {
+                alert("Masukkan posisi yang valid (0-180).");
+            }
+        }
+
+        window.onload = fetchUIDs;
+    </script>
 </body>
 </html>
